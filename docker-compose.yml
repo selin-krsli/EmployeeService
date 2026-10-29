@@ -1,0 +1,52 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "PosCube_Sql123!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - employee-sql-data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 40s
+
+  api:
+    build:
+      context: .
+      dockerfile: src/employee-api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5001
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=EmployeeServiceDb;User Id=sa;Password=PosCube_Sql123!;TrustServerCertificate=True;MultipleActiveResultSets=true"
+      JwtSettings__Issuer: EmployeeService
+      JwtSettings__Audience: EmployeeServiceClient
+      JwtSettings__SecretKey: "docker-dev-secret-key-must-be-32+"
+      JwtSettings__ExpirationMinutes: "60"
+      SeedOnStartup: "true"
+      DisableHttpsRedirection: "true"
+    ports:
+      - "5001:5001"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  client:
+    build:
+      context: ./src/employee-client
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - api
+
+volumes:
+  employee-sql-data:

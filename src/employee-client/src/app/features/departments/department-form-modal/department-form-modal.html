@@ -1,0 +1,29 @@
+<app-modal [title]="title" (closed)="closed.emit()">
+  <form id="department-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div *ngIf="errorMessage as message" class="alert alert-danger d-flex align-items-center gap-2 py-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>{{ message }}
+    </div>
+
+    <div class="mb-0">
+      <label class="form-label" for="departmentName">Birim Adı <span class="text-danger">*</span></label>
+      <input
+        id="departmentName"
+        class="form-control"
+        formControlName="name"
+        [class.is-invalid]="isInvalid(form.controls.name)"
+        autocomplete="organization"
+      />
+      <div class="invalid-feedback">Birim adı zorunludur (en fazla 100 karakter).</div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-footer">
+    <button *ngIf="readonly; else departmentEditFooter" type="button" class="btn btn-primary" (click)="closed.emit()">Kapat</button>
+    <ng-template #departmentEditFooter>
+      <button type="submit" form="department-form" class="btn btn-primary" [disabled]="saving">
+        <span *ngIf="saving" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+        {{ department ? 'Güncelle' : 'Kaydet' }}
+      </button>
+    </ng-template>
+  </div>
+</app-modal>

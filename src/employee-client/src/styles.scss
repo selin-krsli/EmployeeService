@@ -1,0 +1,262 @@
+// ---------------------------------------------------------------------------
+// Corporate theme — Bootstrap 5 variable overrides (must precede the import)
+// ---------------------------------------------------------------------------
+$primary: #1b4f8a;
+$secondary: #64748b;
+$success: #1f9d6b;
+$info: #0e8fb0;
+$warning: #e8a317;
+$danger: #d64550;
+$light: #f3f5f8;
+$dark: #0f2a43;
+
+$body-bg: #f3f5f8;
+$body-color: #243447;
+$font-family-sans-serif: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+$border-radius: 0.5rem;
+$border-radius-lg: 0.75rem;
+$card-border-color: #e3e8ef;
+$card-cap-bg: #ffffff;
+$link-decoration: none;
+$enable-shadows: false;
+
+// ---------------------------------------------------------------------------
+// Bootstrap 5 — only the parts the app actually uses
+// ---------------------------------------------------------------------------
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/tables';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/card';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/progress';
+@import 'bootstrap/scss/close';
+@import 'bootstrap/scss/modal';
+@import 'bootstrap/scss/spinners';
+@import 'bootstrap/scss/placeholders';
+
+@import 'bootstrap/scss/helpers';
+@import 'bootstrap/scss/utilities/api';
+
+@import 'sweetalert2/dist/sweetalert2.min.css';
+
+// ---------------------------------------------------------------------------
+// Layout design tokens (shared by header, sidebar and main layout)
+// ---------------------------------------------------------------------------
+:root {
+  --app-header-height: 60px;
+  --app-sidebar-width: 260px;
+  --app-header-bg: #0f2a43;
+  --app-accent: #e8a317;
+  --app-border: #e3e8ef;
+}
+
+body {
+  background-color: $body-bg;
+}
+
+// Readable text must not show a blinking caret. Inputs and text areas keep theirs.
+:where(body, body *) {
+  caret-color: transparent;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  caret-color: auto;
+}
+
+.list-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e4ebf4;
+  background: #fff;
+
+  &__total {
+    color: #64748b;
+    font-size: 0.875rem;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+}
+
+.card {
+  box-shadow: 0 1px 2px rgba(15, 42, 67, 0.06);
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0;
+}
+
+.page-subtitle {
+  color: $secondary;
+  margin-top: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+// Shared list table chrome (Personel / Birim)
+.data-list-card {
+  border: 1px solid #d3dcea;
+  border-radius: 0.75rem;
+  background-color: #fff;
+  box-shadow: 0 6px 20px rgba(15, 42, 67, 0.1);
+  overflow: hidden;
+}
+
+.data-table {
+  // Bootstrap paints cells through these variables, so overriding them keeps hover/zebra working.
+  --bs-table-bg: #fff;
+  --bs-table-hover-bg: #e3edfa;
+  --bs-table-hover-color: var(--bs-body-color);
+
+  thead th {
+    padding: 0.9rem 1rem;
+    background: linear-gradient(135deg, #17426f 0%, #1b4f8a 100%);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-bottom: 3px solid var(--app-accent);
+    // Table background variables would otherwise tint the header cells.
+    box-shadow: none;
+  }
+
+  tbody {
+    tr {
+      transition: background-color 0.12s ease;
+
+      // Soft zebra striping so long rows stay easy to follow.
+      &:nth-child(even) {
+        --bs-table-bg-type: #f4f8fd;
+      }
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #e4ebf4;
+      color: #26384b;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+  }
+}
+
+.data-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #e8f0fa;
+  color: var(--bs-primary);
+  font-size: 1.15rem;
+}
+
+// Row action buttons + floating "more" menu (Personel / Birim / Kullanıcı lists)
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+
+  &__menu {
+    position: relative;
+  }
+
+  &__dropdown {
+    position: fixed;
+    z-index: 1080;
+    min-width: 10.5rem;
+    padding: 0.35rem;
+    border: 1px solid #c5ced9;
+    border-radius: 0.5rem;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(15, 42, 67, 0.14);
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      width: 100%;
+      padding: 0.45rem 0.65rem;
+      border: 0;
+      border-radius: 0.35rem;
+      background: transparent;
+      color: #243447;
+      font-size: 0.875rem;
+      text-align: left;
+
+      i {
+        color: #7b8a9d;
+      }
+
+      &:hover:not(:disabled) {
+        background: #f3f6fa;
+        color: var(--bs-primary);
+
+        i {
+          color: var(--bs-primary);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  &__danger:hover:not(:disabled) {
+    background: #fdecee !important;
+    color: var(--bs-danger) !important;
+
+    i {
+      color: var(--bs-danger) !important;
+    }
+  }
+}

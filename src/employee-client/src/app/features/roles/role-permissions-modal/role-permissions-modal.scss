@@ -1,0 +1,50 @@
+.permission-card {
+  border: 1px solid #c5ced9;
+  box-shadow: 0 4px 12px rgba(15, 42, 67, 0.1);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.65rem;
+    margin-bottom: 0.85rem;
+    border-bottom: 1px solid #d7dee7;
+  }
+
+  &__count {
+    color: var(--bs-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  &--none {
+    box-shadow: none;
+
+    .bi-folder2 {
+      color: #7b8a9d !important;
+    }
+  }
+}
+
+.permission-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid #d7dee7;
+  border-radius: 0.4rem;
+  background-color: #f3f5f8;
+  color: #7b8a9d;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  &--granted {
+    border-color: rgba(31, 157, 107, 0.35);
+    background-color: #e3f5ed;
+    color: #157350;
+
+    i {
+      color: var(--bs-success);
+    }
+  }
+}

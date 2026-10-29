@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.layout-content {
+  min-height: 100vh;
+  padding-top: var(--app-header-height);
+  transition: margin-left 0.2s ease-in-out;
+}
+
+.layout-backdrop {
+  position: fixed;
+  inset: var(--app-header-height) 0 0 0;
+  z-index: 1010;
+  background-color: rgba(15, 42, 67, 0.45);
+}
+
+@media (min-width: 992px) {
+  .layout-content--shifted {
+    margin-left: var(--app-sidebar-width);
+  }
+}

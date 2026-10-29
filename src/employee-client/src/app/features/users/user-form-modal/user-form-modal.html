@@ -1,0 +1,198 @@
+<app-modal
+  [title]="title"
+  size="lg"
+  [scrollable]="false"
+  (closed)="closed.emit()"
+>
+  <form id="user-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div *ngIf="errorMessage as message" class="alert alert-danger d-flex align-items-center gap-2 py-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>{{ message }}
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+      <h6 class="text-uppercase text-secondary small fw-semibold mb-0">Personel Bilgileri</h6>
+      <div *ngIf="user?.employeeNumber as employeeNumber" class="user-id-chip small text-nowrap ms-auto">
+        <span class="text-uppercase fw-semibold">ID:</span>
+        <strong class="ms-1">{{ employeeNumber }}</strong>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div *ngIf="showEmployeePicker" class="col-12">
+        <label class="form-label" for="employeeId">
+          Personel Seçimi
+          <span *ngIf="!isEdit" class="text-danger">*</span>
+        </label>
+        <select
+          id="employeeId"
+          class="form-select"
+          formControlName="employeeId"
+          [class.is-invalid]="isInvalid(form.controls.employeeId)"
+        >
+          <option [ngValue]="null" disabled>
+            <ng-container *ngIf="loadingOptions">Personeller yükleniyor...</ng-container>
+            <ng-container *ngIf="!loadingOptions && isEdit">Personel bağlantısı yok</ng-container>
+            <ng-container *ngIf="!loadingOptions && !isEdit">Personel seçiniz</ng-container>
+          </option>
+          <option *ngFor="let employee of employeeOptions" [ngValue]="employee.id">
+            {{ employee.firstName }} {{ employee.lastName }} · {{ employee.employeeNumber }} ({{ employee.departmentName }})
+          </option>
+        </select>
+        <div class="invalid-feedback">Hesap açılacak personeli seçin.</div>
+        <div *ngIf="!isEdit && !loadingOptions && employeeOptions.length === 0" class="form-text text-warning-emphasis">
+          <i class="bi bi-info-circle me-1"></i>Hesabı olmayan aktif personel bulunmuyor.
+        </div>
+        <div *ngIf="!isEdit && (loadingOptions || employeeOptions.length > 0)" class="form-text">Ad, soyad ve e-posta seçilen personelden otomatik alınır.</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="firstName">Ad</label>
+        <input
+          id="firstName"
+          class="form-control identity-field"
+          [value]="identityText(person.firstName)"
+          readonly
+          tabindex="-1"
+        />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="lastName">Soyad</label>
+        <input
+          id="lastName"
+          class="form-control identity-field"
+          [value]="identityText(person.lastName)"
+          readonly
+          tabindex="-1"
+        />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="email">E-posta</label>
+        <input
+          id="email"
+          type="text"
+          class="form-control identity-field"
+          [value]="identityText(person.email)"
+          readonly
+          tabindex="-1"
+        />
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+      <h6 class="text-uppercase text-secondary small fw-semibold mb-0">Hesap Bilgileri</h6>
+      <ng-container *ngIf="isEdit">
+        <ng-container *ngIf="readonly; else activeSwitch">
+          <span *ngIf="form.controls.isActive.value" class="badge text-bg-success text-white">Aktif Kullanıcı</span>
+          <span *ngIf="!form.controls.isActive.value" class="badge text-bg-danger text-white">Pasif Kullanıcı</span>
+        </ng-container>
+        <ng-template #activeSwitch>
+          <div class="form-check form-switch mb-0 ms-auto">
+            <input
+              id="isActive"
+              type="checkbox"
+              role="switch"
+              class="form-check-input status-switch"
+              formControlName="isActive"
+            />
+            <label class="form-check-label" for="isActive">
+              {{ form.controls.isActive.value ? 'Aktif' : 'Pasif' }}
+            </label>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label" for="userName">Kullanıcı Adı <span class="text-danger">*</span></label>
+        <div class="input-group has-validation">
+          <span class="input-group-text"><i class="bi bi-at"></i></span>
+          <input
+            id="userName"
+            class="form-control"
+            formControlName="userName"
+            autocomplete="off"
+            [class.is-invalid]="isInvalid(form.controls.userName)"
+          />
+          <div class="invalid-feedback">
+            <ng-container *ngIf="form.controls.userName.hasError('required'); else userNamePatternHint">
+              Kullanıcı adı zorunludur.
+            </ng-container>
+            <ng-template #userNamePatternHint>
+              3-50 karakter; yalnızca harf, rakam, nokta, alt çizgi ve tire kullanılabilir.
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isEdit" class="col-md-6">
+        <label class="form-label" for="password">Parola <span class="text-danger">*</span></label>
+        <div class="input-group has-validation">
+          <span class="input-group-text"><i class="bi bi-key"></i></span>
+          <input
+            id="password"
+            class="form-control"
+            formControlName="password"
+            autocomplete="new-password"
+            [type]="showPassword ? 'text' : 'password'"
+            [class.is-invalid]="isInvalid(form.controls.password)"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            [attr.aria-label]="showPassword ? 'Parolayı gizle' : 'Parolayı göster'"
+            (click)="togglePassword()"
+          >
+            <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+          </button>
+          <div class="invalid-feedback">
+            <ng-container *ngIf="form.controls.password.hasError('required'); else passwordLengthHint">
+              Parola zorunludur.
+            </ng-container>
+            <ng-template #passwordLengthHint>
+              Parola en az {{ passwordMinLength }} karakter olmalıdır.
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isEdit" class="col-md-6">
+        <label class="form-label" for="role">Kullanıcı Rolü <span class="text-danger">*</span></label>
+        <select
+          id="role"
+          class="form-select"
+          formControlName="role"
+          [class.is-invalid]="isInvalid(form.controls.role)"
+        >
+          <option value="" disabled>Rol seçiniz</option>
+          <option *ngFor="let role of roles" [value]="role.name">{{ role.name }}</option>
+        </select>
+        <div class="invalid-feedback">Kullanıcı rolünü seçin.</div>
+      </div>
+
+      <div *ngIf="!isEdit" class="col-md-6">
+        <label class="form-label" for="role">Kullanıcı Rolü <span class="text-danger">*</span></label>
+        <select
+          id="role"
+          class="form-select"
+          formControlName="role"
+          [class.is-invalid]="isInvalid(form.controls.role)"
+        >
+          <option value="" disabled>Rol seçiniz</option>
+          <option *ngFor="let role of roles" [value]="role.name">{{ role.name }}</option>
+        </select>
+        <div class="invalid-feedback">Kullanıcı rolünü seçin.</div>
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-footer">
+    <button *ngIf="readonly; else userEditFooter" type="button" class="btn btn-primary" (click)="closed.emit()">Kapat</button>
+    <ng-template #userEditFooter>
+      <button type="submit" form="user-form" class="btn btn-primary" [disabled]="saving">
+        <span *ngIf="saving" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+        {{ isEdit ? 'Güncelle' : 'Kullanıcıyı Kaydet' }}
+      </button>
+    </ng-template>
+  </div>
+</app-modal>

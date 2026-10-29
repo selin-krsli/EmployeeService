@@ -1,0 +1,39 @@
+<header class="app-header d-flex align-items-center px-3">
+  <button
+    type="button"
+    class="btn btn-icon me-3"
+    aria-label="Menüyü aç/kapat"
+    (click)="sidebarToggle.emit()"
+  >
+    <i class="bi bi-list fs-4"></i>
+  </button>
+
+  <a class="app-brand d-flex align-items-center" routerLink="/">
+    <span class="app-brand__icon"><i class="bi bi-people-fill"></i></span>
+    <span class="app-brand__text">
+      <strong>PosCube HR</strong>
+      <small class="d-none d-sm-block">Personel Yönetim Paneli</small>
+    </span>
+  </a>
+
+  <div class="ms-auto d-flex align-items-center gap-3">
+    <button
+      *ngIf="user as current"
+      type="button"
+      class="user-chip d-flex align-items-center gap-2"
+      title="Hesabımı görüntüle"
+      (click)="openProfile()"
+    >
+      <span class="user-chip__avatar">{{ initials }}</span>
+      <span class="user-chip__text d-none d-md-flex">
+        <span class="user-chip__name">{{ current.name || current.userName }}</span>
+        <small class="user-chip__role">{{ current.roles.join(', ') }}</small>
+      </span>
+    </button>
+    <button type="button" class="btn btn-icon" title="Çıkış Yap" aria-label="Çıkış Yap" (click)="logout()">
+      <i class="bi bi-box-arrow-right"></i>
+    </button>
+  </div>
+</header>
+
+<app-user-form-modal *ngIf="profileUser as profile" [user]="profile" [readonly]="true" (closed)="closeProfile()" />

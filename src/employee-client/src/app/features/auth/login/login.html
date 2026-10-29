@@ -1,0 +1,73 @@
+<main class="login-page">
+  <div class="card login-card">
+    <div class="card-body p-4 p-sm-5">
+      <div class="login-brand">
+        <span class="login-brand__icon"><i class="bi bi-people-fill"></i></span>
+        <div>
+          <div class="login-brand__title">PosCube HR</div>
+          <small class="text-secondary">Personel Yönetim Paneli</small>
+        </div>
+      </div>
+
+      <h1 class="h4 fw-semibold mb-4">Giriş Yap</h1>
+
+      <div
+        *ngIf="feedback as message"
+        class="alert d-flex align-items-start gap-2 py-2"
+        [class.alert-success]="message.ok"
+        [class.alert-danger]="!message.ok"
+        role="alert"
+      >
+        <i class="bi" [class.bi-check-circle-fill]="message.ok" [class.bi-exclamation-triangle-fill]="!message.ok"></i>
+        <span>{{ message.text }}</span>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="login">Kullanıcı Adı veya E-posta</label>
+          <div class="input-group has-validation">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input
+              id="login"
+              class="form-control"
+              formControlName="login"
+              autocomplete="username"
+              [class.is-invalid]="f.login.invalid && (f.login.touched || f.login.dirty)"
+            />
+            <div class="invalid-feedback">Kullanıcı adı zorunludur.</div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="password">Parola</label>
+          <div class="input-group has-validation">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input
+              id="password"
+              class="form-control"
+              formControlName="password"
+              autocomplete="current-password"
+              [type]="showPassword ? 'text' : 'password'"
+              [class.is-invalid]="f.password.invalid && (f.password.touched || f.password.dirty)"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              [attr.aria-label]="showPassword ? 'Parolayı gizle' : 'Parolayı göster'"
+              (click)="togglePassword()"
+            >
+              <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+            </button>
+            <div class="invalid-feedback">Parola en az 6 karakter olmalıdır.</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+          <i *ngIf="!isSubmitting" class="bi bi-box-arrow-in-right me-1"></i>
+          Giriş Yap
+        </button>
+      </form>
+    </div>
+  </div>
+</main>

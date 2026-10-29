@@ -1,0 +1,87 @@
+<app-modal title="Personel Kimlik Kartı" (closed)="closed.emit()">
+  <ng-container *ngIf="employee as person">
+    <div class="id-card-scene">
+      <div
+        class="id-card"
+        role="button"
+        tabindex="0"
+        aria-label="Kartı çevir"
+        [class.id-card--flipped]="flipped"
+        [attr.aria-pressed]="flipped"
+        (click)="toggleFlip()"
+        (keydown.enter)="toggleFlip()"
+        (keydown.space)="$event.preventDefault(); toggleFlip()"
+      >
+        <div class="id-card__face id-card__front">
+          <div class="id-card__brand">
+            <span><i class="bi bi-people-fill"></i> PosCube</span>
+            <span class="id-card__status" [class.id-card__status--passive]="!person.isActive">
+              {{ person.isActive ? 'Aktif' : 'Pasif' }}
+            </span>
+          </div>
+
+          <div class="id-card__body">
+            <div class="id-card__avatar">{{ person | initials }}</div>
+            <div class="id-card__identity">
+              <div class="id-card__name">{{ person.firstName }} {{ person.lastName }}</div>
+              <div class="id-card__job">{{ person.jobTitle || 'Ünvan belirtilmemiş' }}</div>
+              <div class="id-card__department">
+                <i class="bi bi-diagram-3"></i> {{ person.departmentName }}
+              </div>
+              <div class="id-card__email" data-testid="card-email" title="{{ person.email }}">
+                <i class="bi bi-envelope-fill"></i> {{ person.email }}
+              </div>
+            </div>
+          </div>
+
+          <div class="id-card__footer">
+            <span>ID: <strong>{{ person.employeeNumber }}</strong></span>
+            <span>İşe Başlama: <strong>{{ person.hireDate | date: 'dd.MM.yyyy' }}</strong></span>
+          </div>
+        </div>
+
+        <div class="id-card__face id-card__back">
+          <div class="id-card__back-title">İletişim Bilgileri</div>
+          <ul class="id-card__contact">
+            <li *ngIf="person.phoneNumber" data-testid="card-phone">
+              <i class="bi bi-telephone-fill" title="Telefon"></i>
+              <span>{{ person.phoneNumber }}</span>
+            </li>
+            <ng-container *ngIf="homeAddress as home">
+              <li data-testid="card-home-address">
+                <i class="bi bi-house-door-fill" title="Ev adresi"></i>
+                <div class="id-card__address">
+                  <span class="id-card__address-place">{{ home.city }} / {{ home.district }}</span>
+                  <span
+                    *ngIf="home.fullAddress"
+                    class="id-card__address-detail"
+                    [class.id-card__address-detail--compact]="home.fullAddress.length > 115"
+                    title="{{ home.fullAddress }}"
+                  >{{ home.fullAddress }}</span>
+                </div>
+              </li>
+            </ng-container>
+            <ng-container *ngIf="workAddress as work">
+              <li data-testid="card-work-address">
+                <i class="bi bi-briefcase-fill" title="İş adresi"></i>
+                <div class="id-card__address">
+                  <span class="id-card__address-place">{{ work.city }} / {{ work.district }}</span>
+                  <span
+                    *ngIf="work.fullAddress"
+                    class="id-card__address-detail"
+                    [class.id-card__address-detail--compact]="work.fullAddress.length > 115"
+                    title="{{ work.fullAddress }}"
+                  >{{ work.fullAddress }}</span>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center text-secondary small mt-3 mb-0">
+      <i class="bi bi-arrow-repeat"></i> Kartı çevirmek için üzerine tıklayın
+    </p>
+  </ng-container>
+</app-modal>

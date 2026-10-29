@@ -1,0 +1,57 @@
+<aside class="sidebar d-flex flex-column" [class.sidebar--open]="open" aria-label="Ana menü">
+  <nav class="flex-grow-1 py-3">
+    <ul class="nav flex-column">
+      <ng-container *ngFor="let entry of entries">
+        <li *ngIf="entry.kind === 'link'" class="nav-item">
+          <a
+            class="sidebar__link"
+            [routerLink]="entry.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: entry.exact ?? false }"
+            (click)="navigate.emit()"
+          >
+            <i class="bi" [class]="entry.icon"></i>
+            <span>{{ entry.label }}</span>
+          </a>
+        </li>
+        <li *ngIf="entry.kind === 'group'" class="nav-item">
+          <button
+            type="button"
+            class="sidebar__link sidebar__toggle"
+            [attr.aria-expanded]="openGroupId === entry.id"
+            [attr.aria-controls]="'sidebar-' + entry.id"
+            (click)="toggleGroup(entry.id)"
+          >
+            <i class="bi" [class]="entry.icon"></i>
+            <span>{{ entry.label }}</span>
+            <i
+              class="bi bi-chevron-down sidebar__chevron ms-auto"
+              [class.sidebar__chevron--open]="openGroupId === entry.id"
+            ></i>
+          </button>
+          <ul
+            *ngIf="openGroupId === entry.id"
+            [id]="'sidebar-' + entry.id"
+            class="sidebar__submenu nav flex-column"
+          >
+            <li *ngFor="let child of entry.children" class="nav-item">
+              <a
+                class="sidebar__link sidebar__link--child"
+                [routerLink]="child.route"
+                routerLinkActive="active"
+                (click)="navigate.emit()"
+              >
+                <i class="bi" [class]="child.icon"></i>
+                <span>{{ child.label }}</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ng-container>
+    </ul>
+  </nav>
+
+  <div class="sidebar__footer px-3 py-3">
+    <small class="text-secondary">PosCube &middot; v1.0</small>
+  </div>
+</aside>

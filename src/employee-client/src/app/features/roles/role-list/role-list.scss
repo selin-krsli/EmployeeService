@@ -1,0 +1,13 @@
+.permission-summary {
+  min-width: 11rem;
+
+  .progress {
+    height: 0.4rem;
+    background-color: #e3e8ef;
+  }
+}
+
+.role-avatar--admin {
+  background-color: var(--bs-primary);
+  color: #fff;
+}

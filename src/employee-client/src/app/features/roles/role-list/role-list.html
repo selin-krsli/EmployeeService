@@ -1,0 +1,115 @@
+<div class="page-header">
+  <h1 class="page-title">Rol ve İzinler</h1>
+</div>
+
+<div *ngIf="loadError" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  Rol listesi yüklenemedi.
+  <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="loadRoles()">
+    Tekrar Dene
+  </button>
+</div>
+
+<div class="card data-list-card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0 data-table">
+      <thead>
+        <tr>
+          <th scope="col">Rol Adı</th>
+          <th scope="col" class="d-none d-md-table-cell">Açıklama</th>
+          <th scope="col">Yetki Özeti</th>
+          <th scope="col" class="d-none d-sm-table-cell">Kullanıcı</th>
+          <th scope="col" class="text-end">İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="loading">
+          <td colspan="5" class="text-center text-secondary py-5">
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            Yükleniyor...
+          </td>
+        </tr>
+        <ng-container *ngIf="!loading">
+          <tr *ngFor="let role of roles">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="data-avatar" [class.role-avatar--admin]="role.name === AppRole.Admin" aria-hidden="true">
+                  <i class="bi bi-shield-lock"></i>
+                </span>
+                <div class="fw-semibold text-nowrap">{{ role.name }}</div>
+              </div>
+            </td>
+            <td class="d-none d-md-table-cell small text-secondary">{{ role.description || '—' }}</td>
+            <td class="permission-summary">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="fw-semibold">{{ summarize(role.permissions).granted }} / {{ summarize(role.permissions).total }} yetki</span>
+                <span class="text-secondary">{{ summarize(role.permissions).modules }} modül</span>
+              </div>
+              <div
+                class="progress"
+                role="progressbar"
+                [attr.aria-valuenow]="summarize(role.permissions).granted"
+                aria-valuemin="0"
+                [attr.aria-valuemax]="summarize(role.permissions).total"
+                [attr.aria-label]="role.name + ' yetki oranı'"
+              >
+                <div
+                  class="progress-bar bg-success"
+                  [style.width.%]="summarize(role.permissions).total ? (summarize(role.permissions).granted / summarize(role.permissions).total) * 100 : 0"
+                ></div>
+              </div>
+            </td>
+            <td class="d-none d-sm-table-cell text-nowrap">
+              <i class="bi bi-people text-secondary me-1"></i>{{ role.userCount }}
+            </td>
+            <td class="text-end">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                title="Yetki Detayı"
+                aria-label="Yetki Detayı"
+                (click)="openPermissions(role)"
+              >
+                <i class="bi bi-shield-check"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="roles.length === 0 && !loadError">
+            <td colspan="5" class="text-center text-secondary py-5">
+              <i class="bi bi-shield-lock d-block fs-3 mb-1"></i>
+              Tanımlı rol bulunamadı.
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div class="list-pager" *ngIf="!loading && !loadError && totalCount > 0">
+    <span class="list-pager__total"><strong>Toplam:</strong> {{ totalCount }} Rol</span>
+    <div class="list-pager__controls">
+      <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="page <= 1" (click)="goToPage(page - 1)">
+        Önceki
+      </button>
+      <button
+        *ngFor="let n of pageNumbers"
+        type="button"
+        class="btn btn-sm"
+        [class.btn-primary]="n === page"
+        [class.btn-outline-secondary]="n !== page"
+        (click)="goToPage(n)"
+      >
+        {{ n }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        [disabled]="page >= totalPages"
+        (click)="goToPage(page + 1)"
+      >
+        Sonraki
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-role-permissions-modal *ngIf="selectedRole as role" [role]="role" (closed)="closePermissions()" />

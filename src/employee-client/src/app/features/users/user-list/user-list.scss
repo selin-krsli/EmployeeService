@@ -1,0 +1,47 @@
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+
+  &__search {
+    flex: 0 1 16rem;
+    width: 16rem;
+    max-width: 100%;
+
+    .input-group-text,
+    .form-control {
+      border-color: #c5ced9;
+    }
+
+    .form-control:focus {
+      border-color: var(--bs-primary);
+      box-shadow: 0 0 0 0.2rem rgba(27, 79, 138, 0.15);
+    }
+  }
+}
+.user-avatar {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border: 1px solid #c5ced9;
+  border-radius: 999px;
+  background-color: #f3f5f8;
+  color: #3c4b5e;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  &--admin {
+    border-color: rgba(27, 79, 138, 0.35);
+    background-color: #e8f0fa;
+    color: var(--bs-primary);
+  }
+
+  & + & {
+    margin-left: 0.25rem;
+  }
+}

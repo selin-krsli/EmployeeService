@@ -1,0 +1,60 @@
+.employee-id-chip {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--bs-primary);
+  border-radius: 999px;
+  background-color: var(--bs-primary);
+  color: #fff;
+
+  strong {
+    color: #fff;
+  }
+}
+
+.status-switch-wrap--no-updated {
+  margin-left: 100px;
+}
+
+.status-switch-wrap--has-updated {
+  margin-left: 65px;
+}
+
+.audit-dates {
+  align-self: end;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+
+  &--no-updated {
+    margin-top: 0;
+  }
+}
+
+.audit-date {
+  color: var(--bs-secondary);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  &--created {
+    color: var(--bs-danger);
+    font-weight: 600;
+  }
+}
+
+.status-switch:checked {
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+}
+
+.address-block {
+  border: 1px solid #c5ced9;
+  box-shadow: 0 4px 12px rgba(15, 42, 67, 0.1);
+  overflow: hidden;
+
+  .card-header {
+    background-color: #f7f9fc;
+    border-bottom: 1px solid #d7dee7;
+  }
+}
+

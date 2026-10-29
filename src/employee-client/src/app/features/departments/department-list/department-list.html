@@ -1,0 +1,153 @@
+<div class="page-header">
+  <h1 class="page-title">Birim Listesi</h1>
+  <button *hasRole="AppRole.Admin" type="button" class="btn btn-primary" (click)="openCreate()">
+    <i class="bi bi-plus-lg me-1"></i> Yeni Birim
+  </button>
+</div>
+
+<div *ngIf="loadError" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  Birim listesi yüklenemedi.
+  <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="loadDepartments()">
+    Tekrar Dene
+  </button>
+</div>
+
+<div class="list-toolbar">
+  <div class="list-toolbar__search input-group">
+    <span class="input-group-text bg-white text-secondary">
+      <i class="bi bi-search" aria-hidden="true"></i>
+    </span>
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Birim ara..."
+      [value]="searchTerm"
+      (input)="onSearchInput($event)"
+      aria-label="Birim ara"
+    />
+  </div>
+</div>
+
+<div class="card data-list-card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0 data-table">
+      <thead>
+        <tr>
+          <th scope="col">Birim</th>
+          <th scope="col" class="text-end">İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="loading">
+          <td colspan="2" class="text-center text-secondary py-5">
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            Yükleniyor...
+          </td>
+        </tr>
+        <ng-container *ngIf="!loading">
+          <tr *ngFor="let department of departments">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="data-avatar" aria-hidden="true">
+                  <i class="bi bi-diagram-3"></i>
+                </span>
+                <div class="fw-semibold text-nowrap">{{ department.name }}</div>
+              </div>
+            </td>
+            <td class="text-end">
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  title="Görüntüle"
+                  aria-label="Görüntüle"
+                  (click)="openView(department)"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+
+                <div *hasRole="AppRole.Admin" class="row-actions__menu">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    aria-label="İşlemler"
+                    [attr.aria-expanded]="actionMenuId === department.id"
+                    (click)="toggleActionMenu($event, department.id)"
+                  >
+                    <span *ngIf="deletingId === department.id" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                    <i *ngIf="deletingId !== department.id" class="bi bi-three-dots-vertical"></i>
+                  </button>
+
+                  <div
+                    *ngIf="actionMenuId === department.id && actionMenuPosition as menuPos"
+                    class="row-actions__dropdown"
+                    role="menu"
+                    [style.top.px]="menuPos.top"
+                    [style.right.px]="menuPos.right"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <button type="button" role="menuitem" (click)="openEdit(department)">
+                      <i class="bi bi-pencil-square"></i> Güncelle
+                    </button>
+                    <button
+                      type="button"
+                      class="row-actions__danger"
+                      role="menuitem"
+                      (click)="deleteDepartment(department)"
+                    >
+                      <i class="bi bi-trash"></i> Sil
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="departments.length === 0 && !loadError">
+            <td colspan="2" class="text-center text-secondary py-5">
+              <i class="bi bi-diagram-3 d-block fs-3 mb-1"></i>
+              <ng-container *ngIf="searchTerm.trim(); else noDeptRecords">
+                Aramanızla eşleşen birim bulunamadı.
+              </ng-container>
+              <ng-template #noDeptRecords>Henüz birim kaydı yok.</ng-template>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div class="list-pager" *ngIf="!loading && !loadError && totalCount > 0">
+    <span class="list-pager__total"><strong>Toplam:</strong> {{ totalCount }} Birim</span>
+    <div class="list-pager__controls">
+      <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="page <= 1" (click)="goToPage(page - 1)">
+        Önceki
+      </button>
+      <button
+        *ngFor="let n of pageNumbers"
+        type="button"
+        class="btn btn-sm"
+        [class.btn-primary]="n === page"
+        [class.btn-outline-secondary]="n !== page"
+        (click)="goToPage(n)"
+      >
+        {{ n }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        [disabled]="page >= totalPages"
+        (click)="goToPage(page + 1)"
+      >
+        Sonraki
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-department-form-modal
+  *ngIf="formModal as modal"
+  [department]="modal.department"
+  [readonly]="modal.readonly"
+  (saved)="onSaved()"
+  (closed)="closeForm()"
+/>

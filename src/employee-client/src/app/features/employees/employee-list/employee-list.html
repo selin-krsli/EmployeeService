@@ -1,0 +1,202 @@
+<div class="page-header">
+  <h1 class="page-title">Personel Listesi</h1>
+  <button *hasRole="AppRole.Admin" type="button" class="btn btn-primary" (click)="openCreate()">
+    <i class="bi bi-person-plus-fill me-1"></i> Yeni Personel
+  </button>
+</div>
+
+<div *ngIf="loadError" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  Personel listesi yüklenemedi.
+  <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="loadEmployees()">
+    Tekrar Dene
+  </button>
+</div>
+
+<div class="list-toolbar">
+  <div class="list-toolbar__search input-group">
+    <span class="input-group-text bg-white text-secondary">
+      <i class="bi bi-search" aria-hidden="true"></i>
+    </span>
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Personel ara..."
+      [value]="searchTerm"
+      (input)="onSearchInput($event)"
+      aria-label="Personel ara"
+    />
+  </div>
+
+  <div class="form-check form-switch list-toolbar__filter mb-0" (click)="$event.stopPropagation()">
+    <input
+      id="activeFilter"
+      type="checkbox"
+      role="switch"
+      class="form-check-input"
+      [checked]="showActive"
+      (click)="toggleActiveFilter($event)"
+    />
+    <label class="form-check-label text-nowrap" for="activeFilter">
+      {{ showActive ? 'Aktif' : 'Pasif' }}
+    </label>
+  </div>
+</div>
+
+<div class="card data-list-card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0 data-table">
+      <thead>
+        <tr>
+          <th scope="col">Personel</th>
+          <th scope="col">Birim</th>
+          <th scope="col" class="d-none d-lg-table-cell">Ünvan</th>
+          <th scope="col" class="d-none d-xl-table-cell">İletişim</th>
+          <th scope="col">Durum</th>
+          <th scope="col" class="text-end">İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="loading">
+          <td colspan="6" class="text-center text-secondary py-5">
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            Yükleniyor...
+          </td>
+        </tr>
+        <ng-container *ngIf="!loading">
+          <tr *ngFor="let employee of employees">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="data-avatar" aria-hidden="true">
+                  <i class="bi bi-person-fill"></i>
+                </span>
+                <div class="text-nowrap">
+                  <div class="fw-semibold">{{ employee.firstName }} {{ employee.lastName }}</div>
+                  <div class="small text-secondary">{{ employee.employeeNumber }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span
+                class="department-chip"
+                [style.border-color]="departmentColor(employee.departmentId, employee.departmentName)"
+              >
+                {{ employee.departmentName }}
+              </span>
+            </td>
+            <td class="d-none d-lg-table-cell">{{ employee.jobTitle || '—' }}</td>
+            <td class="d-none d-xl-table-cell small text-nowrap">
+              <div><i class="bi bi-envelope text-secondary me-1"></i>{{ employee.email }}</div>
+              <div *ngIf="employee.phoneNumber">
+                <i class="bi bi-telephone text-secondary me-1"></i>{{ employee.phoneNumber }}
+              </div>
+            </td>
+            <td>
+              <span *ngIf="employee.isActive" class="badge text-bg-success text-white">Aktif</span>
+              <span *ngIf="!employee.isActive" class="badge text-bg-danger text-white">Pasif</span>
+            </td>
+            <td class="text-end">
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  title="Kart Görünümü"
+                  aria-label="Kart Görünümü"
+                  (click)="openCard(employee)"
+                >
+                  <i class="bi bi-person-vcard"></i>
+                </button>
+
+                <div class="row-actions__menu">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    aria-label="İşlemler"
+                    [attr.aria-expanded]="actionMenuId === employee.id"
+                    (click)="toggleActionMenu($event, employee.id)"
+                  >
+                    <span *ngIf="deletingId === employee.id" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                    <i *ngIf="deletingId !== employee.id" class="bi bi-three-dots-vertical"></i>
+                  </button>
+
+                  <div
+                    *ngIf="actionMenuId === employee.id && actionMenuPosition as menuPos"
+                    class="row-actions__dropdown"
+                    role="menu"
+                    [style.top.px]="menuPos.top"
+                    [style.right.px]="menuPos.right"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <button *hasRole="AppRole.Admin" type="button" role="menuitem" (click)="openEdit(employee)">
+                      <i class="bi bi-pencil-square"></i> Güncelle
+                    </button>
+                    <button type="button" role="menuitem" (click)="openView(employee)">
+                      <i class="bi bi-eye"></i> Görüntüle
+                    </button>
+                    <button
+                      *hasRole="AppRole.Admin"
+                      type="button"
+                      class="row-actions__danger"
+                      role="menuitem"
+                      (click)="deleteEmployee(employee)"
+                    >
+                      <i class="bi bi-trash"></i> Sil
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="employees.length === 0 && !loadError">
+            <td colspan="6" class="text-center text-secondary py-5">
+              <i class="bi bi-people d-block fs-3 mb-1"></i>
+              <ng-container *ngIf="searchTerm.trim(); else noSearchEmpty">
+                Aramanızla eşleşen personel bulunamadı.
+              </ng-container>
+              <ng-template #noSearchEmpty>
+                <ng-container *ngIf="showActive; else passiveEmpty">Aktif personel kaydı yok.</ng-container>
+                <ng-template #passiveEmpty>Pasif personel kaydı yok.</ng-template>
+              </ng-template>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div class="list-pager" *ngIf="!loading && !loadError && totalCount > 0">
+    <span class="list-pager__total"><strong>Toplam:</strong> {{ totalCount }} Personel</span>
+    <div class="list-pager__controls">
+      <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="page <= 1" (click)="goToPage(page - 1)">
+        Önceki
+      </button>
+      <button
+        *ngFor="let n of pageNumbers"
+        type="button"
+        class="btn btn-sm"
+        [class.btn-primary]="n === page"
+        [class.btn-outline-secondary]="n !== page"
+        (click)="goToPage(n)"
+      >
+        {{ n }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        [disabled]="page >= totalPages"
+        (click)="goToPage(page + 1)"
+      >
+        Sonraki
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-employee-form-modal
+  *ngIf="formModal as modal"
+  [employee]="modal.employee"
+  [readonly]="modal.readonly"
+  (saved)="onSaved()"
+  (closed)="closeForm()"
+/>
+
+<app-employee-card-modal *ngIf="cardEmployee as employee" [employee]="employee" (closed)="closeCard()" />

@@ -1,0 +1,187 @@
+<app-modal [title]="title" size="lg" (closed)="closed.emit()">
+  <form id="employee-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div *ngIf="errorMessage as message" class="alert alert-danger d-flex align-items-center gap-2 py-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>{{ message }}
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+      <h6 class="text-uppercase text-secondary small fw-semibold mb-0">Kişisel Bilgiler</h6>
+      <div *ngIf="employee as current" class="employee-id-chip small text-nowrap">
+        <span class="text-uppercase fw-semibold">ID:</span>
+        <strong class="ms-1">{{ current.employeeNumber }}</strong>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label" for="firstName">Ad <span class="text-danger">*</span></label>
+        <input id="firstName" class="form-control" formControlName="firstName"          [class.is-invalid]="isInvalid(form.controls.firstName)" />
+        <div class="invalid-feedback">Ad zorunludur (en fazla 100 karakter).</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="lastName">Soyad <span class="text-danger">*</span></label>
+        <input id="lastName" class="form-control" formControlName="lastName"          [class.is-invalid]="isInvalid(form.controls.lastName)" />
+        <div class="invalid-feedback">Soyad zorunludur (en fazla 100 karakter).</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="identityNumber">TC Kimlik No <span class="text-danger">*</span></label>
+        <input id="identityNumber" class="form-control" formControlName="identityNumber" maxlength="11"
+          inputmode="numeric" [class.is-invalid]="isInvalid(form.controls.identityNumber)" />
+        <div class="invalid-feedback">11 haneli bir kimlik numarası girin.</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="email">E-posta <span class="text-danger">*</span></label>
+        <input id="email" type="email" class="form-control" formControlName="email"          [class.is-invalid]="isInvalid(form.controls.email)" />
+        <div class="invalid-feedback">Geçerli bir e-posta adresi girin.</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="phoneNumber">Telefon</label>
+        <input id="phoneNumber" type="tel" class="form-control" formControlName="phoneNumber"          [class.is-invalid]="isInvalid(form.controls.phoneNumber)" />
+        <div class="invalid-feedback">En fazla 20 karakter.</div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="dateOfBirth">Doğum Tarihi <span class="text-danger">*</span></label>
+        <input id="dateOfBirth" type="date" class="form-control" formControlName="dateOfBirth"
+          [class.is-invalid]="isInvalid(form.controls.dateOfBirth)" />
+        <div class="invalid-feedback">Doğum tarihi zorunludur.</div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="hireDate">İşe Giriş Tarihi <span class="text-danger">*</span></label>
+        <input id="hireDate" type="date" class="form-control" formControlName="hireDate"
+          [class.is-invalid]="isInvalid(form.controls.hireDate)" />
+        <div class="invalid-feedback">İşe giriş tarihi zorunludur.</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="departmentId">Departman <span class="text-danger">*</span></label>
+        <select id="departmentId" class="form-select" formControlName="departmentId"
+          [class.is-invalid]="isInvalid(form.controls.departmentId)">
+          <option [ngValue]="null" disabled>Seçiniz</option>
+          <option *ngFor="let department of departments" [ngValue]="department.id">{{ department.name }}</option>
+        </select>
+        <div class="invalid-feedback">Departman seçin.</div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="jobTitle">Ünvan</label>
+        <input id="jobTitle" class="form-control" formControlName="jobTitle"          [class.is-invalid]="isInvalid(form.controls.jobTitle)" />
+        <div class="invalid-feedback">En fazla 100 karakter.</div>
+      </div>
+      <div class="col-md-4 d-flex flex-column justify-content-end gap-1">
+        <div
+          *ngIf="!readonly"
+          class="form-check form-switch mb-0"
+          [class.status-switch-wrap--no-updated]="!employee?.updatedAt"
+          [class.status-switch-wrap--has-updated]="!!employee?.updatedAt"
+        >
+          <input
+            id="isActive"
+            type="checkbox"
+            role="switch"
+            class="form-check-input status-switch"
+            formControlName="isActive"
+          />
+          <label class="form-check-label" for="isActive">
+            {{ form.controls.isActive.value ? 'Aktif' : 'Pasif' }}
+          </label>
+        </div>
+        <div *ngIf="employee as current" class="audit-dates" [class.audit-dates--no-updated]="!current.updatedAt">
+          <div class="audit-date audit-date--created">
+            Kayıt Tarihi: {{ current.createdAt | date: 'dd.MM.yyyy HH:mm' }}
+          </div>
+          <div *ngIf="current.updatedAt as updatedAt" class="audit-date">
+            Güncelleme Tarihi: {{ updatedAt | date: 'dd.MM.yyyy HH:mm' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h6 class="text-uppercase text-secondary small fw-semibold mb-0">Adresler</h6>
+      <button *ngIf="canAddAddress" type="button" class="btn btn-sm btn-outline-primary" (click)="addAddress()">
+        <i class="bi bi-plus-lg"></i> Adres Ekle
+      </button>
+    </div>
+
+    <div formArrayName="addresses" class="vstack gap-3">
+      <div *ngFor="let group of addresses.controls; let i = index" class="card address-block" [formGroupName]="i">
+        <div class="card-header d-flex align-items-center gap-2 py-2">
+          <i class="bi text-primary"
+            [class.bi-house-door-fill]="group.controls.addressType.value === 'Home'"
+            [class.bi-briefcase-fill]="group.controls.addressType.value === 'Work'"></i>
+          <select
+            class="form-select form-select-sm w-auto"
+            formControlName="addressType"
+            [attr.aria-label]="'Adres ' + (i + 1) + ' tipi'"
+            (change)="onAddressTypeChange()"
+          >
+            <option *ngFor="let type of availableTypesFor(i)" [ngValue]="type">{{ addressTypeLabels[type] }} Adresi</option>
+          </select>
+          <div class="ms-auto d-flex align-items-center gap-2">
+            <div *ngIf="group.controls.updatedAt.value as updatedAt" class="audit-date">
+              Güncelleme Tarihi: {{ updatedAt | date: 'dd.MM.yyyy HH:mm' }}
+            </div>
+            <button *ngIf="!readonly" type="button" class="btn btn-sm btn-outline-danger" (click)="removeAddress(i)"
+              [attr.aria-label]="'Adres ' + (i + 1) + ' kaldır'">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label" [for]="'city-' + i">İl <span class="text-danger">*</span></label>
+              <input [id]="'city-' + i" class="form-control" formControlName="city"                  [class.is-invalid]="isInvalid(group.controls.city)" />
+              <div class="invalid-feedback">İl zorunludur.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" [for]="'district-' + i">İlçe <span class="text-danger">*</span></label>
+              <input [id]="'district-' + i" class="form-control" formControlName="district"                  [class.is-invalid]="isInvalid(group.controls.district)" />
+              <div class="invalid-feedback">İlçe zorunludur.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" [for]="'postalCode-' + i">Posta Kodu</label>
+              <input [id]="'postalCode-' + i" class="form-control" formControlName="postalCode"                  [class.is-invalid]="isInvalid(group.controls.postalCode)" />
+              <div class="invalid-feedback">En fazla 10 karakter.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" [for]="'country-' + i">Ülke <span class="text-danger">*</span></label>
+              <input [id]="'country-' + i" class="form-control" formControlName="country"                  [class.is-invalid]="isInvalid(group.controls.country)" />
+              <div class="invalid-feedback">Ülke zorunludur.</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" [for]="'fullAddress-' + i">Açık Adres <span class="text-danger">*</span></label>
+              <textarea
+                [id]="'fullAddress-' + i"
+                rows="2"
+                class="form-control"
+                formControlName="fullAddress"
+                maxlength="130"
+                [class.is-invalid]="isInvalid(group.controls.fullAddress)"
+              ></textarea>
+              <div class="invalid-feedback">Açık adres zorunludur (en fazla 130 karakter).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="addresses.length === 0" class="text-center text-secondary border rounded py-4 small">
+        <i class="bi bi-geo-alt d-block fs-4 mb-1"></i>
+        <ng-container *ngIf="readonly; else noAddressHint">Adres kaydı bulunmuyor.</ng-container>
+        <ng-template #noAddressHint>
+          Henüz adres eklenmedi. "Adres Ekle" ile ev veya iş adresi ekleyebilirsiniz.
+        </ng-template>
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-footer">
+    <button *ngIf="readonly; else editFooter" type="button" class="btn btn-primary" (click)="closed.emit()">Kapat</button>
+    <ng-template #editFooter>
+      <button type="submit" form="employee-form" class="btn btn-primary" [disabled]="saving">
+        <span *ngIf="saving" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+        {{ employee ? 'Güncelle' : 'Personeli Kaydet' }}
+      </button>
+    </ng-template>
+  </div>
+</app-modal>

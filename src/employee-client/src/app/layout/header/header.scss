@@ -1,0 +1,105 @@
+:host {
+  display: block;
+}
+
+.app-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1030;
+  height: var(--app-header-height);
+  background-color: var(--app-header-bg);
+  border-bottom: 3px solid var(--app-accent);
+  color: #fff;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.85);
+  border: 0;
+
+  &:hover,
+  &:focus-visible {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.app-brand {
+  gap: 0.75rem;
+  color: #fff;
+
+  &:hover {
+    color: #fff;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    background-color: var(--app-accent);
+    color: var(--app-header-bg);
+    font-size: 1.15rem;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+
+    small {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.72rem;
+    }
+  }
+}
+
+.user-chip {
+  margin: 0;
+  padding: 0.2rem 0.45rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  &__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.15);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  &__text {
+    align-items: flex-start;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  &__name {
+    font-size: 0.9rem;
+  }
+
+  &__role {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.72rem;
+  }
+}

@@ -1,0 +1,61 @@
+# İşletim sistemi
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# IDE ve editör
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# .NET derleme çıktıları
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+TestResults/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Node ve Angular
+node_modules/
+dist/
+.angular/
+tmp/
+out-tsc/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+typings/
+__screenshots__/
+
+# Ortam ve gizli dosyalar
+.env
+.env.*
+!.env.example
+*.pfx
+*.key
+*.pem
+
+# Diğer
+*.log
+*.local
