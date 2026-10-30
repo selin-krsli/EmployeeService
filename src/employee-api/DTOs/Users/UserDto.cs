@@ -18,8 +18,8 @@ public class UserDto
 
     public bool IsActive { get; set; }
 
-    /// <summary>Seeded default admin (admin@poscube.com). The client hides delete for this account.</summary>
-    public bool IsDefaultAdmin { get; set; }
+    /// <summary>Seeded super admin (admin@poscube.com). Other admins cannot change this account.</summary>
+    public bool IsSuperAdmin { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

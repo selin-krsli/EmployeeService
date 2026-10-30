@@ -21,7 +21,7 @@ public class UserProfile : Profile
                 o => o.MapFrom(s => s.Employee != null ? s.Employee.EmployeeNumber : null))
             .ForMember(d => d.Roles,
                 o => o.MapFrom(s => s.UserRoles.Select(ur => ur.Role.Name)))
-            .ForMember(d => d.IsDefaultAdmin,
+            .ForMember(d => d.IsSuperAdmin,
                 o => o.MapFrom(s => s.Email == DbSeeder.AdminEmail));
     }
 }

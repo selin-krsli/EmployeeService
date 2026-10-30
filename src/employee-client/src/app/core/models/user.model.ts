@@ -8,7 +8,7 @@ export interface User {
   employeeId: number | null;
   employeeNumber: string | null;
   isActive: boolean;
-  isDefaultAdmin: boolean;
+  isSuperAdmin: boolean;
   createdAt: string;
   roles: string[];
 }

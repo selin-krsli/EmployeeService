@@ -99,6 +99,8 @@ public class UserService : IUserService
             return false;
         }
 
+        EnsureNotSuperAdmin(user);
+
         var roleName = dto.Role.Trim();
         var role = await _context.Roles
             .FirstOrDefaultAsync(r => r.Name == roleName, cancellationToken)
@@ -150,6 +152,8 @@ public class UserService : IUserService
             return false;
         }
 
+        EnsureNotSuperAdmin(user);
+
         var verification = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.CurrentPassword);
         if (verification == PasswordVerificationResult.Failed)
         {
@@ -182,6 +186,8 @@ public class UserService : IUserService
             return false;
         }
 
+        EnsureNotSuperAdmin(user);
+
         if (await IsLastActiveAdminAsync(user.Id, cancellationToken))
         {
             throw new AppException(
@@ -192,6 +198,16 @@ public class UserService : IUserService
         _context.Users.Remove(user);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
+    }
+
+    private static void EnsureNotSuperAdmin(User user)
+    {
+        if (string.Equals(user.Email, DbSeeder.AdminEmail, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new AppException(
+                StatusCodes.Status400BadRequest,
+                "Süper yönetici hesabı değiştirilemez.");
+        }
     }
 
     private async Task<bool> IsLastActiveAdminAsync(int userId, CancellationToken cancellationToken)

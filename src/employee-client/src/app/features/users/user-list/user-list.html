@@ -99,7 +99,7 @@
                   <i class="bi bi-eye"></i>
                 </button>
 
-                <div class="row-actions__menu">
+                <div *ngIf="!user.isSuperAdmin" class="row-actions__menu">
                   <button
                     type="button"
                     class="btn btn-sm btn-outline-secondary"
@@ -126,7 +126,6 @@
                       <i class="bi bi-key"></i> Şifre Değiştir
                     </button>
                     <button
-                      *ngIf="!user.isDefaultAdmin"
                       type="button"
                       class="row-actions__danger"
                       role="menuitem"
