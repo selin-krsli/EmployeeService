@@ -21,7 +21,8 @@ public class EmployeeCreateDto
     [StringLength(256)]
     public string Email { get; set; } = string.Empty;
 
-    [StringLength(20)]
+    [StringLength(11, MinimumLength = 10)]
+    [RegularExpression(@"^(0?5\d{9})$", ErrorMessage = "Geçerli bir numara girin (örn. 05XX XXX XX XX).")]
     public string? PhoneNumber { get; set; }
 
     [Required]

@@ -14,6 +14,7 @@ namespace EmployeeService.Data;
 public static class DbSeeder
 {
     public const string AdminUserName = "admin";
+    public const string AdminEmail = "admin@poscube.com";
     public const string AdminPassword = "Admin123!";
 
     public const string ViewerUserName = "viewer";
@@ -211,7 +212,7 @@ public static class DbSeeder
             passwordHasher,
             userName: AdminUserName,
             password: AdminPassword,
-            email: "admin@poscube.com",
+            email: AdminEmail,
             roleId: AppRoles.AdminId,
             cancellationToken);
 

@@ -53,9 +53,7 @@
         <ng-container *ngIf="!loading">
           <tr *ngFor="let user of users">
             <td>
-              <div class="d-flex align-items-center gap-2">
-                <span class="data-avatar user-avatar" aria-hidden="true">{{ user | initials }}</span>
-                <div class="text-nowrap">
+              <div class="text-nowrap">
                   <div class="fw-semibold">
                     <ng-container *ngIf="user.employeeId !== null; else accountOnlyName">
                       {{ user.firstName }} {{ user.lastName }}
@@ -64,7 +62,6 @@
                     <span *ngIf="user.id === currentUserId" class="badge rounded-pill bg-light text-secondary border ms-1">Siz</span>
                   </div>
                   <div class="small text-secondary">&#64;{{ user.userName }}</div>
-                </div>
               </div>
             </td>
             <td class="d-none d-lg-table-cell small text-nowrap">
@@ -129,6 +126,7 @@
                       <i class="bi bi-key"></i> Şifre Değiştir
                     </button>
                     <button
+                      *ngIf="!user.isDefaultAdmin"
                       type="button"
                       class="row-actions__danger"
                       role="menuitem"

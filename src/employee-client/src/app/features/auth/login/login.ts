@@ -32,8 +32,8 @@ export class Login implements OnInit {
   protected showPassword = false;
 
   protected readonly loginForm = this.fb.group({
-    login: ['', [Validators.required]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    login: ['admin', [Validators.required]],
+    password: ['Admin123!', [Validators.required, Validators.minLength(6)]],
   });
 
   protected get f() {

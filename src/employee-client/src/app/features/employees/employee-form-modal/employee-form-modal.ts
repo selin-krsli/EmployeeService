@@ -34,6 +34,48 @@ import {
 } from '../../../core/models';
 import { DepartmentService, EmployeeService } from '../../../core/services';
 import { Modal } from '../../../shared/modal/modal';
+
+/** 5xx (10 digits) or 05xx (11 digits). Empty stays valid because the field is optional. */
+const TR_MOBILE_DIGITS = /^(0?5\d{9})$/;
+
+function optionalTrMobile(control: AbstractControl): { phone: true } | null {
+  const digits = String(control.value ?? '').replace(/\D/g, '');
+  if (!digits) {
+    return null;
+  }
+  return TR_MOBILE_DIGITS.test(digits) ? null : { phone: true };
+}
+
+/**
+ * Groups a mobile number as the user types.
+ * A leading 0 allows 11 digits (0532 888 99 00); otherwise 10 digits (532 888 99 00).
+ */
+function formatTrMobile(raw: string): string {
+  let digits = raw.replace(/\D/g, '');
+  const groupedFromStart = digits.startsWith('0') ? [4, 3, 2, 2] : [3, 3, 2, 2];
+  digits = digits.slice(0, digits.startsWith('0') ? 11 : 10);
+
+  const parts: string[] = [];
+  let cursor = 0;
+  for (const size of groupedFromStart) {
+    if (cursor >= digits.length) {
+      break;
+    }
+    parts.push(digits.slice(cursor, cursor + size));
+    cursor += size;
+  }
+  return parts.join(' ');
+}
+
+/** Stored form is always 05XXXXXXXXX. A 10-digit 5xx entry gains the trunk prefix. */
+function canonicalTrMobile(raw: string): string | null {
+  const digits = raw.replace(/\D/g, '');
+  if (!TR_MOBILE_DIGITS.test(digits)) {
+    return null;
+  }
+  return digits.length === 10 ? `0${digits}` : digits;
+}
+
 type AddressForm = FormGroup<{
   addressType: FormControl<AddressType>;
   city: FormControl<string>;
@@ -86,7 +128,7 @@ export class EmployeeFormModal implements OnInit {
     lastName: ['', [Validators.required, Validators.maxLength(100)]],
     identityNumber: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
-    phoneNumber: ['', Validators.maxLength(20)],
+    phoneNumber: ['', [Validators.maxLength(14), optionalTrMobile]],
     dateOfBirth: ['', Validators.required],
     hireDate: ['', Validators.required],
     departmentId: this.fb.control<number | null>(null, Validators.required),
@@ -126,7 +168,7 @@ export class EmployeeFormModal implements OnInit {
       lastName: employee.lastName,
       identityNumber: employee.identityNumber,
       email: employee.email,
-      phoneNumber: employee.phoneNumber ?? '',
+      phoneNumber: formatTrMobile(employee.phoneNumber ?? ''),
       dateOfBirth: employee.dateOfBirth,
       hireDate: employee.hireDate,
       departmentId: employee.departmentId,
@@ -182,6 +224,17 @@ export class EmployeeFormModal implements OnInit {
     return control.invalid && (control.touched || control.dirty);
   }
 
+  /** Strips letters and extra digits, then groups 5xx or 05xx as it was typed. */
+  protected onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const formatted = formatTrMobile(input.value);
+    if (this.form.controls.phoneNumber.value === formatted && input.value === formatted) {
+      return;
+    }
+    this.form.controls.phoneNumber.setValue(formatted);
+    input.value = formatted;
+  }
+
   protected submit(): void {
     if (this.readonly) {
       return;
@@ -203,7 +256,7 @@ export class EmployeeFormModal implements OnInit {
       lastName: value.lastName.trim(),
       identityNumber: value.identityNumber,
       email: value.email.trim(),
-      phoneNumber: value.phoneNumber.trim() || null,
+      phoneNumber: canonicalTrMobile(value.phoneNumber),
       dateOfBirth: value.dateOfBirth,
       hireDate: value.hireDate,
       departmentId: value.departmentId!,

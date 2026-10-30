@@ -18,6 +18,9 @@ public class UserDto
 
     public bool IsActive { get; set; }
 
+    /// <summary>Seeded default admin (admin@poscube.com). The client hides delete for this account.</summary>
+    public bool IsDefaultAdmin { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public List<string> Roles { get; set; } = new();

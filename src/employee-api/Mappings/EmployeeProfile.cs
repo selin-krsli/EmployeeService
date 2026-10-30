@@ -23,8 +23,7 @@ public class EmployeeProfile : Profile
             .ForMember(d => d.FirstName, o => o.MapFrom(s => s.FirstName.Trim()))
             .ForMember(d => d.LastName, o => o.MapFrom(s => s.LastName.Trim()))
             .ForMember(d => d.Email, o => o.MapFrom(s => s.Email.Trim()))
-            .ForMember(d => d.PhoneNumber, o => o.MapFrom(s =>
-                string.IsNullOrWhiteSpace(s.PhoneNumber) ? null : s.PhoneNumber.Trim()))
+            .ForMember(d => d.PhoneNumber, o => o.MapFrom(s => NormalizePhone(s.PhoneNumber)))
             .ForMember(d => d.JobTitle, o => o.MapFrom(s =>
                 string.IsNullOrWhiteSpace(s.JobTitle) ? null : s.JobTitle.Trim()));
 
@@ -40,9 +39,27 @@ public class EmployeeProfile : Profile
             .ForMember(d => d.FirstName, o => o.MapFrom(s => s.FirstName.Trim()))
             .ForMember(d => d.LastName, o => o.MapFrom(s => s.LastName.Trim()))
             .ForMember(d => d.Email, o => o.MapFrom(s => s.Email.Trim()))
-            .ForMember(d => d.PhoneNumber, o => o.MapFrom(s =>
-                string.IsNullOrWhiteSpace(s.PhoneNumber) ? null : s.PhoneNumber.Trim()))
+            .ForMember(d => d.PhoneNumber, o => o.MapFrom(s => NormalizePhone(s.PhoneNumber)))
             .ForMember(d => d.JobTitle, o => o.MapFrom(s =>
                 string.IsNullOrWhiteSpace(s.JobTitle) ? null : s.JobTitle.Trim()));
+    }
+
+    /// <summary>
+    /// Accepts 5xxxxxxxxx and 05xxxxxxxxx, stores 05xxxxxxxxx.
+    /// </summary>
+    private static string? NormalizePhone(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return null;
+        }
+
+        var digits = new string(phone.Where(char.IsDigit).ToArray());
+        if (digits.Length == 10)
+        {
+            digits = "0" + digits;
+        }
+
+        return digits.Length == 0 ? null : digits;
     }
 }

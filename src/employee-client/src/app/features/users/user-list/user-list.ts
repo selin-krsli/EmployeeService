@@ -17,7 +17,6 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/auth';
 import { AppRole, PAGE_SIZE, User } from '../../../core/models';
 import { UserService } from '../../../core/services';
-import { InitialsPipe } from '../../../shared/pipes/initials.pipe';
 import { UserFormModal } from '../user-form-modal/user-form-modal';
 import { UserPasswordModal } from '../user-password-modal/user-password-modal';
 
@@ -34,7 +33,7 @@ interface ActionMenuPosition {
 
 @Component({
   selector: 'app-user-list',
-  imports: [CommonModule, DatePipe, InitialsPipe, UserFormModal, UserPasswordModal],
+  imports: [CommonModule, DatePipe, UserFormModal, UserPasswordModal],
   templateUrl: './user-list.html',
   styleUrl: './user-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
