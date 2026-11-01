@@ -17,8 +17,6 @@ public class UserDto
     public string? EmployeeNumber { get; set; }
 
     public bool IsActive { get; set; }
-
-    /// <summary>Seeded super admin (admin@poscube.com). Other admins cannot change this account.</summary>
     public bool IsSuperAdmin { get; set; }
 
     public DateTime CreatedAt { get; set; }

@@ -96,6 +96,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<IEmployeeService, global::EmployeeService.Services.Implementations.EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();

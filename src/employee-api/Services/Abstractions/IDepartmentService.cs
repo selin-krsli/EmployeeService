@@ -5,8 +5,6 @@ namespace EmployeeService.Services.Abstractions;
 
 public interface IDepartmentService
 {
-    Task<IReadOnlyList<DepartmentDto>> GetAllAsync(CancellationToken cancellationToken = default);
-
     Task<PagedResult<DepartmentDto>> GetPagedAsync(
         int page,
         int pageSize,

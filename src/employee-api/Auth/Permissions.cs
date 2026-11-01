@@ -1,9 +1,4 @@
 namespace EmployeeService.Auth;
-
-/// <summary>
-/// Permission claim values in "module.action" form. Each one is registered as an authorization
-/// policy of the same name, so <see cref="HasPermissionAttribute"/> can refer to it directly.
-/// </summary>
 public static class Permissions
 {
     public static class Employees

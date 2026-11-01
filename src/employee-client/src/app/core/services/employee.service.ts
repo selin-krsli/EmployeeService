@@ -11,10 +11,6 @@ export class EmployeeService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/employees`;
 
-  getAll(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(this.baseUrl);
-  }
-
   /** Server-side search and paging. The client only receives the current page. */
   getPage(page: number, pageSize: number, search: string, isActive: boolean): Observable<PagedResult<Employee>> {
     let params = new HttpParams()

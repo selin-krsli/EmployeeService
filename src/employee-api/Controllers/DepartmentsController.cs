@@ -19,14 +19,6 @@ public class DepartmentsController : ControllerBase
         _departmentService = departmentService;
     }
 
-    [HttpGet]
-    [HasPermission(Permissions.Departments.Read)]
-    public async Task<ActionResult<IReadOnlyList<DepartmentDto>>> GetAll(CancellationToken cancellationToken)
-    {
-        var departments = await _departmentService.GetAllAsync(cancellationToken);
-        return Ok(departments);
-    }
-
     [HttpGet("paged")]
     [HasPermission(Permissions.Departments.Read)]
     public async Task<ActionResult<PagedResult<DepartmentDto>>> GetPaged(

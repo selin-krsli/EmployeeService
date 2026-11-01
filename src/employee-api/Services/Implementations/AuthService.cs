@@ -59,12 +59,6 @@ public class AuthService : IAuthService
                 "Kullanıcı aktif değildir.");
         }
 
-        if (verification == PasswordVerificationResult.SuccessRehashNeeded)
-        {
-            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
         var userDto = await _context.Users
             .AsNoTracking()
             .Where(u => u.Id == user.Id)

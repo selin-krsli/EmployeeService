@@ -1,12 +1,6 @@
 using EmployeeService.DTOs.Roles;
 
 namespace EmployeeService.Auth;
-
-/// <summary>
-/// Default permission claims per role (seeded into the RoleClaims table) and the helpers that
-/// turn a role's claims into the module/CRUD rows shown on the "Yetki Dağılımı" screen.
-/// At runtime the RoleClaims table is the source of truth, not this class.
-/// </summary>
 public static class RolePermissions
 {
     private static readonly (string Key, string Label)[] Modules =

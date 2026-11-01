@@ -21,13 +21,6 @@ public class DepartmentService : IDepartmentService
         _mapper = mapper;
     }
 
-    public async Task<IReadOnlyList<DepartmentDto>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await ProjectDepartments()
-            .OrderBy(d => d.Id)
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<PagedResult<DepartmentDto>> GetPagedAsync(
         int page,
         int pageSize,

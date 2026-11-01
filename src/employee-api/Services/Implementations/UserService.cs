@@ -1,9 +1,6 @@
 using EmployeeService.Auth;
 using EmployeeService.Data;
 using EmployeeService.DTOs.Common;
-using EmployeeService.DTOs.Department;
-using EmployeeService.DTOs.Employee;
-using EmployeeService.DTOs.Roles;
 using EmployeeService.DTOs.Users;
 using EmployeeService.Services.Abstractions;
 using EmployeeService.Exceptions;

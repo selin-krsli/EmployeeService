@@ -3,10 +3,6 @@ using EmployeeService.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeService.Middleware;
-
-/// <summary>
-/// Converts unhandled exceptions into a consistent JSON body: <c>{ message, field? }</c>.
-/// </summary>
 public sealed class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;

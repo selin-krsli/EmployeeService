@@ -1,6 +1,7 @@
 export * from './address.model';
 export * from './paged.model';
 export * from './auth.model';
+export * from './dashboard.model';
 export * from './department.model';
 export * from './employee.model';
 export * from './role.model';

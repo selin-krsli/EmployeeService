@@ -11,10 +11,6 @@ export class DepartmentService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/departments`;
 
-  getAll(): Observable<Department[]> {
-    return this.http.get<Department[]>(this.baseUrl);
-  }
-
   /** Server-side search and paging. The client only receives the current page. */
   getPage(page: number, pageSize: number, search: string): Observable<PagedResult<Department>> {
     let params = new HttpParams().set('page', page).set('pageSize', pageSize);

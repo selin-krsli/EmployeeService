@@ -1,11 +1,6 @@
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace EmployeeService.Models.Common;
-
-/// <summary>
-/// Base class for all persisted entities: key plus audit timestamps.
-/// <see cref="CreatedAt"/> and <see cref="UpdatedAt"/> are stamped by <c>AppDbContext.SaveChanges</c>.
-/// </summary>
 public abstract class Entity<TId> : IEntity<TId>
     where TId : notnull
 {

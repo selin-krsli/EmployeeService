@@ -26,12 +26,6 @@ public class AppDbContext : DbContext
         ApplyAuditTimestamps();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
-
-    /// <summary>
-    /// Added entities get <c>CreatedAt</c>, modified ones get <c>UpdatedAt</c> (both UTC).
-    /// Overriding the <c>acceptAllChangesOnSuccess</c> overloads covers the parameterless
-    /// SaveChanges / SaveChangesAsync calls too, since they delegate to these.
-    /// </summary>
     private void ApplyAuditTimestamps()
     {
         // Property edits are only detected lazily; without this a changed entity may still read as Unchanged.

@@ -5,8 +5,6 @@ namespace EmployeeService.Services.Abstractions;
 
 public interface IEmployeeService
 {
-    Task<IReadOnlyList<EmployeeListDto>> GetAllAsync(CancellationToken cancellationToken = default);
-
     Task<PagedResult<EmployeeListDto>> GetPagedAsync(
         int page,
         int pageSize,

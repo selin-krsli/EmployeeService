@@ -18,7 +18,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { AppRole, Employee, Role, User } from '../../../core/models';
 import { EmployeeService, RoleService, UserService } from '../../../core/services';
@@ -26,6 +26,7 @@ import { Modal } from '../../../shared/modal/modal';
 
 const USER_NAME_PATTERN = /^[a-zA-Z0-9._-]+$/;
 const PASSWORD_MIN_LENGTH = 6;
+const LOOKUP_PAGE_SIZE = 50;
 
 /**
  * Create / edit / view form for a user account.
@@ -250,8 +251,11 @@ export class UserFormModal implements OnInit {
     };
 
     this.employeeService
-      .getAll()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .getPage(1, LOOKUP_PAGE_SIZE, '', true)
+      .pipe(
+        map((result) => result.items),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (employees) => {
           this.employees = employees;

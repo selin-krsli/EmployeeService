@@ -19,14 +19,6 @@ public class EmployeesController : ControllerBase
         _employeeService = employeeService;
     }
 
-    [HttpGet]
-    [HasPermission(Permissions.Employees.Read)]
-    public async Task<ActionResult<IReadOnlyList<EmployeeListDto>>> GetAll(CancellationToken cancellationToken)
-    {
-        var employees = await _employeeService.GetAllAsync(cancellationToken);
-        return Ok(employees);
-    }
-
     [HttpGet("paged")]
     [HasPermission(Permissions.Employees.Read)]
     public async Task<ActionResult<PagedResult<EmployeeListDto>>> GetPaged(

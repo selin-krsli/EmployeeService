@@ -4,13 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeService.Data;
-
-/// <summary>
-/// Applies pending migrations and inserts demo data on startup. Roles and role claims are seeded
-/// by migrations (<c>HasData</c>); this adds departments, employees, addresses and the two demo users.
-/// Admin/Viewer are users only (no employee row). Demo employees are added only when departments
-/// are empty; demo users only when their user name is free.
-/// </summary>
 public static class DbSeeder
 {
     public const string AdminUserName = "admin";
@@ -227,10 +220,6 @@ public static class DbSeeder
 
         await context.SaveChangesAsync(cancellationToken);
     }
-
-    /// <summary>
-    /// Creates a standalone account (no employee link) so admin/viewer stay out of the employee list.
-    /// </summary>
     private static async Task AddUserIfMissingAsync(
         AppDbContext context,
         IPasswordHasher<User> passwordHasher,

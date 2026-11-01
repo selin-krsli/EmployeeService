@@ -25,15 +25,6 @@ public class EmployeeService : IEmployeeService
         _mapper = mapper;
     }
 
-    public async Task<IReadOnlyList<EmployeeListDto>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.Employees
-            .AsNoTracking()
-            .OrderBy(e => e.Id)
-            .ProjectTo<EmployeeListDto>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<PagedResult<EmployeeListDto>> GetPagedAsync(
         int page,
         int pageSize,
@@ -151,10 +142,6 @@ public class EmployeeService : IEmployeeService
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
-
-    /// <summary>
-    /// The account keeps its own active flag. Only the login e-mail follows the personnel record.
-    /// </summary>
     private async Task SyncLinkedUserEmailAsync(Employee employee, CancellationToken cancellationToken)
     {
         var linkedUser = await _context.Users
@@ -188,10 +175,9 @@ public class EmployeeService : IEmployeeService
 
     private static string GenerateEmployeeNumber()
     {
-        return $"EMP-{Guid.NewGuid().ToString("N")[..5].ToUpperInvariant()}";
+        return $"EMP-{Guid.NewGuid().ToString("N")[..12].ToUpperInvariant()}";
     }
 
-    /// <summary>Hire date must be at least 15 years after the birth date.</summary>
     private static void EnsureMinimumHireAge(DateOnly dateOfBirth, DateOnly hireDate)
     {
         if (hireDate < dateOfBirth.AddYears(15))
@@ -203,9 +189,6 @@ public class EmployeeService : IEmployeeService
         }
     }
 
-    /// <summary>
-    /// At most one Home and one Work address (max two total, distinct types).
-    /// </summary>
     private static void EnsureValidAddresses(IReadOnlyCollection<AddressUpsertDto> addresses)
     {
         if (addresses.Count > 2)
@@ -241,31 +224,14 @@ public class EmployeeService : IEmployeeService
                 nameof(EmployeeCreateDto.IdentityNumber));
         }
     }
-
-    /// <summary>
-    /// Updates existing address rows in place (so EF marks them Modified → UpdatedAt is stamped),
-    /// adds missing types, and removes types that are no longer in the payload.
-    /// Matching is by <see cref="AddressType"/> (at most one Home and one Work per employee).
-    /// </summary>
     private void SyncAddresses(Employee employee, IReadOnlyCollection<AddressUpsertDto> incoming)
     {
-        var remaining = employee.Addresses.ToDictionary(a => a.AddressType);
+        _context.Addresses.RemoveRange(employee.Addresses);
+        employee.Addresses.Clear();
 
         foreach (var dto in incoming)
         {
-            if (remaining.Remove(dto.AddressType, out var existing))
-            {
-                _mapper.Map(dto, existing);
-            }
-            else
-            {
-                employee.Addresses.Add(_mapper.Map<Address>(dto));
-            }
-        }
-
-        if (remaining.Count > 0)
-        {
-            _context.Addresses.RemoveRange(remaining.Values);
+            employee.Addresses.Add(_mapper.Map<Address>(dto));
         }
     }
 }

@@ -21,7 +21,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 
 import {
   ADDRESS_TYPES,
@@ -34,6 +34,8 @@ import {
 } from '../../../core/models';
 import { DepartmentService, EmployeeService } from '../../../core/services';
 import { Modal } from '../../../shared/modal/modal';
+
+const LOOKUP_PAGE_SIZE = 50;
 
 /** 5xx (10 digits) or 05xx (11 digits). Empty stays valid because the field is optional. */
 const TR_MOBILE_DIGITS = /^(0?5\d{9})$/;
@@ -148,8 +150,9 @@ export class EmployeeFormModal implements OnInit {
 
   ngOnInit(): void {
     this.departmentService
-      .getAll()
+      .getPage(1, LOOKUP_PAGE_SIZE, '')
       .pipe(
+        map((result) => result.items),
         catchError(() => of<Department[]>([])),
         takeUntilDestroyed(this.destroyRef),
       )

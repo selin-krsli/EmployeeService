@@ -7,17 +7,13 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { BehaviorSubject, catchError, forkJoin, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, map, of, switchMap } from 'rxjs';
 
-import { Employee } from '../../core/models';
-import { DepartmentService, EmployeeService } from '../../core/services';
+import { DepartmentForPieChart, Employee } from '../../core/models';
+import { DashboardService } from '../../core/services';
 import { departmentColor } from '../../core/utils/department-colors';
 
-interface DepartmentStat {
-  id: number;
-  name: string;
-  count: number;
-  percent: number;
+interface DepartmentStat extends DepartmentForPieChart {
   color: string;
 }
 
@@ -47,8 +43,7 @@ type DashboardState = { status: 'loading' } | { status: 'error' } | DashboardRea
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard {
-  private readonly employeeService = inject(EmployeeService);
-  private readonly departmentService = inject(DepartmentService);
+  private readonly dashboardService = inject(DashboardService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
 
@@ -62,46 +57,23 @@ export class Dashboard {
     this.refresh$
       .pipe(
         switchMap(() =>
-          forkJoin({
-            employees: this.employeeService.getAll(),
-            departments: this.departmentService.getAll(),
-          }).pipe(
-            map(({ employees, departments }): DashboardState => {
-              const totalEmployees = employees.length;
-              const activeEmployees = employees.filter((e) => e.isActive).length;
-              const passiveEmployees = totalEmployees - activeEmployees;
-
-              const monthPrefix = this.currentMonthPrefix();
-              const hiredThisMonth = employees.filter((e) => e.hireDate.startsWith(monthPrefix)).length;
-
-              const departmentStats: DepartmentStat[] = departments
-                .map((department) => {
-                  const count = employees.filter((e) => e.departmentId === department.id).length;
-                  return {
-                    id: department.id,
-                    name: department.name,
-                    count,
-                    percent: totalEmployees > 0 ? Math.round((count / totalEmployees) * 100) : 0,
-                    color: departmentColor(department.id, department.name),
-                  };
-                })
-                .sort((a, b) => b.count - a.count);
-
-              const recentEmployees = [...employees]
-                .filter((employee) => employee.isActive)
-                .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-                .slice(0, 8);
+          this.dashboardService.get().pipe(
+            map((data): DashboardState => {
+              const departmentStats: DepartmentStat[] = data.departmentForPieChart.map((dept) => ({
+                ...dept,
+                color: departmentColor(dept.id, dept.name),
+              }));
 
               return {
                 status: 'ready',
-                totalEmployees,
-                activeEmployees,
-                passiveEmployees,
-                totalDepartments: departments.length,
-                hiredThisMonth,
+                totalEmployees: data.totalEmployees,
+                activeEmployees: data.activeEmployees,
+                passiveEmployees: data.passiveEmployees,
+                totalDepartments: data.totalDepartments,
+                hiredThisMonth: data.hiredThisMonth,
                 departmentStats,
                 pieSlices: this.buildPieSlices(departmentStats),
-                recentEmployees,
+                recentEmployees: data.recentEmployees,
               };
             }),
             catchError(() => of<DashboardState>({ status: 'error' })),
@@ -117,12 +89,6 @@ export class Dashboard {
 
   protected refresh(): void {
     this.refresh$.next();
-  }
-
-  private currentMonthPrefix(): string {
-    const now = new Date();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    return `${now.getFullYear()}-${month}`;
   }
 
   private buildPieSlices(stats: DepartmentStat[]): PieSlice[] {

@@ -43,10 +43,6 @@ public class EmployeeProfile : Profile
             .ForMember(d => d.JobTitle, o => o.MapFrom(s =>
                 string.IsNullOrWhiteSpace(s.JobTitle) ? null : s.JobTitle.Trim()));
     }
-
-    /// <summary>
-    /// Accepts 5xxxxxxxxx and 05xxxxxxxxx, stores 05xxxxxxxxx.
-    /// </summary>
     private static string? NormalizePhone(string? phone)
     {
         if (string.IsNullOrWhiteSpace(phone))

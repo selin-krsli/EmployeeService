@@ -14,10 +14,6 @@ public class UserUpdateDto
     [Required]
     [StringLength(50)]
     public string Role { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Optional password reset; null or empty keeps the current password.
-    /// </summary>
     [StringLength(100, MinimumLength = 6)]
     public string? Password { get; set; }
 }

@@ -1,10 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace EmployeeService.DTOs.Users;
-
-/// <summary>
-/// Name and email are not accepted from the client; they are copied from the selected employee.
-/// </summary>
 public class RegisterDto
 {
     [Required]
