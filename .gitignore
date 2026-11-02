@@ -59,3 +59,4 @@ __screenshots__/
 # Diğer
 *.log
 *.local
+docs/ 
