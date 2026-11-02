@@ -1,4 +1,3 @@
-/** Shared palette for department pie chart and list chips. */
 export const DEPARTMENT_CHART_COLORS = [
   '#1b4f8a',
   '#1f9d6b',
@@ -16,7 +15,6 @@ const NAME_COLOR_OVERRIDES: Record<string, string> = {
   'insan kaynakları': '#ea580c',
 };
 
-/** Stable color for a department across dashboard and employee list. */
 export function departmentColor(departmentId: number, departmentName?: string): string {
   if (departmentName) {
     const key = departmentName.trim().toLocaleLowerCase('tr-TR');

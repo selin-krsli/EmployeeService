@@ -6,10 +6,6 @@ import { catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
 
-/**
- * Adds `Authorization: Bearer <token>` to API calls and sends the user to the login page
- * when the API answers 401 (missing, expired or revoked token).
- */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   if (!req.url.startsWith(environment.apiUrl)) {
     return next(req);

@@ -9,16 +9,6 @@ import {
 
 import { AuthService } from '../../core/auth';
 
-/**
- * Renders its template only when the signed-in user holds at least one of the given roles.
- *
- * ```html
- * <button *hasRole="'Admin'">Sil</button>
- * <button *hasRole="['Admin', 'Viewer']; else noAccess">Görüntüle</button>
- * ```
- *
- * UI-only convenience: the API enforces the same rules with `[Authorize(Roles = ...)]`.
- */
 @Directive({ selector: '[hasRole]' })
 export class HasRoleDirective implements DoCheck {
   @Input({ required: true }) hasRole!: string | readonly string[];

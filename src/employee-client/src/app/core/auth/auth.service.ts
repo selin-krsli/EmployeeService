@@ -8,7 +8,6 @@ import { AuthResponse, AuthUser, LoginRequest } from '../models';
 
 const TOKEN_STORAGE_KEY = 'employee-service.access-token';
 
-/** Omits `returnUrl` when the destination is already the default page. */
 export function loginReturnQuery(url: string | undefined): { returnUrl: string } | undefined {
   const path = url?.split('?')[0] ?? '';
   if (path === '' || path === '/' || path === '/login' || path === '/dashboard') {
@@ -54,7 +53,6 @@ export class AuthService {
     inject(DestroyRef).onDestroy(() => this.clearExpiryTimer());
   }
 
-  /** Current token, or `null` when missing or expired. */
   getToken(): string | null {
     const user = this.currentUser;
     if (!user || user.expiresAt <= Date.now()) {
@@ -63,7 +61,6 @@ export class AuthService {
     return this.token;
   }
 
-  /** True when the user holds at least one of `roles`. */
   hasRole(roles: string | readonly string[]): boolean {
     const required = typeof roles === 'string' ? [roles] : roles;
     const owned = this.roles;
@@ -100,7 +97,6 @@ export class AuthService {
 
   private scheduleExpiry(expiresAt: number): void {
     this.clearExpiryTimer();
-    // setTimeout overflows above ~24.8 days; tokens are far shorter, but guard anyway.
     const delay = Math.min(expiresAt - Date.now(), 2_147_483_647);
     this.expiryTimer = setTimeout(() => this.logout(this.router.url), delay);
   }

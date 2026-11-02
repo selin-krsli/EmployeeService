@@ -1,6 +1,5 @@
 import { Employee } from './employee.model';
 
-/** Pie chart dilimi (`DepartmentForPieChartDto`). */
 export interface DepartmentForPieChart {
   id: number;
   name: string;
@@ -8,7 +7,6 @@ export interface DepartmentForPieChart {
   percent: number;
 }
 
-/** Dashboard payload from `GET /api/dashboard` (`DashboardDto`). */
 export interface DashboardData {
   totalEmployees: number;
   activeEmployees: number;

@@ -1,4 +1,3 @@
-/** One page returned by the list endpoints (`PagedResult`). */
 export interface PagedResult<T> {
   items: T[];
   page: number;

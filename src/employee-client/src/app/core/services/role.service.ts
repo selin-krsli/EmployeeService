@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PagedResult, Role } from '../models';
 
-/** HTTP gateway for `/api/roles` (Admin only). Each role carries its module permission matrix. */
 @Injectable({ providedIn: 'root' })
 export class RoleService {
   private readonly http = inject(HttpClient);

@@ -1,4 +1,3 @@
-/** Role names issued by the backend (`AppRoles`). */
 export const AppRole = {
   Admin: 'Admin',
   Viewer: 'Viewer',
@@ -6,7 +5,6 @@ export const AppRole = {
 
 export type AppRole = (typeof AppRole)[keyof typeof AppRole];
 
-/** CRUD flags of one module, as defined by the backend permission matrix. */
 export interface ModulePermission {
   module: string;
   label: string;
@@ -16,7 +14,6 @@ export interface ModulePermission {
   canDelete: boolean;
 }
 
-/** Role as returned by the API (`RoleDto`). */
 export interface Role {
   id: number;
   name: string;

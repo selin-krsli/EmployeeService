@@ -9,7 +9,6 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
-        // Also used with ProjectTo: keep the member expressions translatable by EF Core.
         CreateMap<User, UserDto>()
             .ForMember(d => d.FirstName,
                 o => o.MapFrom(s => s.Employee != null ? s.Employee.FirstName : string.Empty))

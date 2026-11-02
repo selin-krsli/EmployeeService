@@ -113,7 +113,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Fail fast on a broken mapping configuration instead of at the first request that uses it.
 app.Services.GetRequiredService<AutoMapper.IConfigurationProvider>().AssertConfigurationIsValid();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

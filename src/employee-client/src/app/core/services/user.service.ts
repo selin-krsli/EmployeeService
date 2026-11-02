@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ChangePasswordInput, PagedResult, User, UserCreateInput, UserUpdateInput } from '../models';
 
-/** HTTP gateway for `/api/users` (Admin only); accounts are created through `/api/auth/register`. */
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly http = inject(HttpClient);
@@ -15,7 +14,6 @@ export class UserService {
     return this.http.get<User[]>(this.baseUrl);
   }
 
-  /** Server-side search and paging. The client only receives the current page. */
   getPage(page: number, pageSize: number, search: string): Observable<PagedResult<User>> {
     let params = new HttpParams().set('page', page).set('pageSize', pageSize);
     const term = search.trim();
@@ -25,7 +23,6 @@ export class UserService {
     return this.http.get<PagedResult<User>>(`${this.baseUrl}/paged`, { params });
   }
 
-  /** Signed-in account (`GET /api/auth/me`). */
   me(): Observable<User> {
     return this.http.get<User>(`${environment.apiUrl}/auth/me`);
   }
