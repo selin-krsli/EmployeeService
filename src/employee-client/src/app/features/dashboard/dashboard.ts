@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { BehaviorSubject, catchError, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, map, of, switchMap, tap } from 'rxjs';
 
 import { DepartmentForPieChart, Employee } from '../../core/models';
 import { DashboardService } from '../../core/services';
@@ -21,20 +21,6 @@ interface PieSlice extends DepartmentStat {
   path: string;
 }
 
-interface DashboardReady {
-  status: 'ready';
-  totalEmployees: number;
-  activeEmployees: number;
-  passiveEmployees: number;
-  totalDepartments: number;
-  hiredThisMonth: number;
-  departmentStats: DepartmentStat[];
-  pieSlices: PieSlice[];
-  recentEmployees: Employee[];
-}
-
-type DashboardState = { status: 'loading' } | { status: 'error' } | DashboardReady;
-
 @Component({
   selector: 'app-dashboard',
   imports: [CommonModule, RouterLink, DatePipe],
@@ -47,25 +33,35 @@ export class Dashboard {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
 
-  protected state: DashboardState = { status: 'loading' };
+  protected loading = true;
+  protected loadError = false;
 
-  protected get readyState(): DashboardReady | null {
-    return this.state.status === 'ready' ? this.state : null;
-  }
+  protected totalEmployees = 0;
+  protected activeEmployees = 0;
+  protected passiveEmployees = 0;
+  protected totalDepartments = 0;
+  protected hiredThisMonth = 0;
+  protected departmentStats: DepartmentStat[] = [];
+  protected pieSlices: PieSlice[] = [];
+  protected recentEmployees: Employee[] = [];
 
   constructor() {
     this.refresh$
       .pipe(
+        tap(() => {
+          this.loading = true;
+          this.loadError = false;
+          this.cdr.markForCheck();
+        }),
         switchMap(() =>
           this.dashboardService.get().pipe(
-            map((data): DashboardState => {
+            map((data) => {
               const departmentStats: DepartmentStat[] = data.departmentForPieChart.map((dept) => ({
                 ...dept,
                 color: departmentColor(dept.id, dept.name),
               }));
 
               return {
-                status: 'ready',
                 totalEmployees: data.totalEmployees,
                 activeEmployees: data.activeEmployees,
                 passiveEmployees: data.passiveEmployees,
@@ -76,13 +72,31 @@ export class Dashboard {
                 recentEmployees: data.recentEmployees,
               };
             }),
-            catchError(() => of<DashboardState>({ status: 'error' })),
+            catchError(() => {
+              this.loadError = true;
+              this.loading = false;
+              this.cdr.markForCheck();
+              return of(null);
+            }),
           ),
         ),
         takeUntilDestroyed(),
       )
-      .subscribe((next) => {
-        this.state = next;
+      .subscribe((data) => {
+        if (!data) {
+          return;
+        }
+
+        this.totalEmployees = data.totalEmployees;
+        this.activeEmployees = data.activeEmployees;
+        this.passiveEmployees = data.passiveEmployees;
+        this.totalDepartments = data.totalDepartments;
+        this.hiredThisMonth = data.hiredThisMonth;
+        this.departmentStats = data.departmentStats;
+        this.pieSlices = data.pieSlices;
+        this.recentEmployees = data.recentEmployees;
+        this.loading = false;
+        this.loadError = false;
         this.cdr.markForCheck();
       });
   }
