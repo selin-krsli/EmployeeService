@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Employee Service
 
 Personel, birim ve kullanıcı hesaplarını yönetmek için geliştirilmiş **tam yığın (full-stack)** uygulama.
@@ -440,6 +439,4 @@ Department ──── Employee ──── Address
 | `EmployeeId` | `int?` | Personel FK; Admin ve Viewer için boş olabilir |
 
 Tüm kalıcı varlıklar `Entity<TId>` sınıfından türer. `CreatedAt` ve `UpdatedAt` alanları `AppDbContext.SaveChanges` sırasında UTC olarak yazılır.
-=======
-# EmployeeService
->>>>>>> 332feec1e496c1764d3ed7be589b4c98fa550573
+
